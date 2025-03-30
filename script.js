@@ -440,22 +440,13 @@
         const wordInput = document.getElementById('wordInput');
         const startButton = document.getElementById('startWordGame');
         
-        // Prevent multiple calls while processing
         if (window.isProcessingRound) return;
         window.isProcessingRound = true;
         
-        // Clear everything at start
-        wordDisplay.innerHTML = '';
-        wordInput.value = '';
-        wordInput.classList.add('hidden');
-        startButton.classList.add('hidden');
-        
         try {
-            // Show loading state
-            wordDisplay.className = 'text-4xl font-bold text-white mb-8 min-h-[100px] flex items-center justify-center animate__animated';
             wordDisplay.innerHTML = '<div class="animate__animated animate__pulse">Generating word...</div>';
     
-            const response = await fetch('https://memory-game-bot.vercel.app/api/generate-word', {
+            const response = await fetch('/api/generate-word', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -647,7 +638,7 @@ async function getWordFromAI() {
         let attempts = 0;
         
         while (attempts < 5) {
-            const response = await fetch('https://memory-game-bot.vercel.app/api/generate-word', {
+            const response = await fetch('/api/generate-word', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

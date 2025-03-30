@@ -6,7 +6,10 @@
     { "src": "*.js", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "app.py" },
+    { "src": "/api/(.*)", "dest": "/app.py" },
     { "src": "/(.*)", "dest": "/$1" }
-  ]
+  ],
+  "env": {
+    "GEMINI_API_KEY": "@gemini_api_key"
+  }
 }
