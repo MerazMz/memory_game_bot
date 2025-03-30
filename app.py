@@ -6,19 +6,22 @@ from dotenv import load_dotenv
 import time
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[
+    "http://localhost:3000",
+    "https://memory-game-bot.vercel.app"
+])
 
-# Load API key from .env file
-load_dotenv()
-api_key = os.getenv("GEMINI_API_KEY")
+# Load API key from environment variable
+api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
-    print("Error: GEMINI_API_KEY not found. Please set it in a .env file.")
-    exit(1)
+    print("Error: GEMINI_API_KEY not found")
+    # Don't exit in production
+    api_key = "dummy_key"
 
 # Configure Gemini API
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-2.0-flash')  # Fixed model name to use gemini-pro
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 def generate_with_retry(prompt, max_retries=3):
     for attempt in range(max_retries):
