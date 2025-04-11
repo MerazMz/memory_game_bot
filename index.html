@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synapti BOT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .transform-style-preserve-3d {
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 to-black"></body>
+    <!-- Game Selection Screen -->
+    <div id="gameSelection" class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 animate__animated animate__fadeInDown mb-6 flex items-center justify-center gap-2">
+                <span class="text-5xl">👾</span>
+                SynaptiBot
+            </h1>
+            <p class="text-gray-300 text-xl animate__animated animate__fadeIn animate__delay-1s ">
+                I am your memory game bot choose the game below to start playing!
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <!-- Memory Game Card -->
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInLeft animate__delay-1s" onclick="showGame('memoryGame')">
+                <h2 class="text-2xl font-bold text-white mb-3">Memory Master</h2>
+                <p class="text-gray-300 mb-4">Challenge your mind with this classic memory matching game!</p>
+                <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
+            </div>
+            <!-- Word Memory Game -->
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInUp animate__delay-1s" onclick="showGame('wordGame')">
+                <h2 class="text-2xl font-bold text-white mb-3">Word Wizard</h2>
+                <p class="text-gray-300 mb-4">Test your memory by remembering and typing words!</p>
+                <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
+            </div>
+            <!-- Number Memory Game -->
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInRight animate__delay-1s" onclick="showGame('numberGame')">
+                <h2 class="text-2xl font-bold text-white mb-3">Number Ninja</h2>
+                <p class="text-gray-300 mb-4">Challenge yourself to remember and recall numbers!</p>
+                <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
+            </div>
+            <!-- Visual Memory Grid Game -->
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInUp animate__delay-1s" onclick="showGame('visualGame')">
+                <h2 class="text-2xl font-bold text-white mb-3">Grid Genius</h2>
+                <p class="text-gray-300 mb-4">Test your visual memory with pattern recognition! </p>
+                <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
+            </div>
+            
+            <!-- Reaction Time Game -->
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInRight animate__delay-1s" onclick="showGame('reactionGame')">
+                <h2 class="text-2xl font-bold text-white mb-3">Reflex Tester</h2>
+                <p class="text-gray-300 mb-4">Test your reaction time and reflexes!</p><br>
+                <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
+            </div>
+
+            <!-- Chatbot Game Card -->
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeIn animate__delay-2s" onclick="showGame('chatbotGame')">
+                <h2 class="text-2xl font-bold text-white mb-3">Memory Chatbot</h2>
+                <p class="text-gray-300 mb-4">Play memory games through conversation with AI!</p>
+                <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memory Game Section -->
+    <div id="memoryGame" class="container mx-auto px-4 py-8 hidden">
+        <!-- Back Button -->
+        <button onclick="showGameSelection()" class="mb-8 text-white flex items-center gap-2 hover:text-pink-500 transition-colors">
+            <span>← Back to Games</span>
+        </button>
+
+        <!-- Header Section -->
+        <header class="text-center mb-12">
+            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 animate__animated animate__fadeIn mb-4">
+                Memory Master
+            </h1>
+            <p class="text-gray-300 text-xl animate__animated animate__fadeIn animate__delay-1s">
+                Challenge your mind, test your memory!
+            </p>
+        </header>
+
+        <!-- Game Stats -->
+        <div class="flex justify-center gap-8 mb-8">
+            <div class="flex flex-col items-center gap-8">
+                <div class="flex justify-center gap-4">
+                    <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4 transform hover:scale-105 transition-all">
+                        <p class="text-gray-300">Score</p>
+                        <p class="text-3xl font-bold text-white" id="score">0</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4 transform hover:scale-105 transition-all">
+                        <p class="text-gray-300">Time</p>
+                        <p class="text-3xl font-bold text-white" id="timer">00:00</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4 transform hover:scale-105 transition-all">
+                        <p class="text-gray-300">Challenge</p>
+                        <p class="text-xl font-bold text-white" id="aiChallenge">Complete in 60s</p>
+                    </div>
+                </div>
+
+                <!-- Add AI Hint button before the Start Game button -->
+                <div class="flex flex-col items-center">
+                    <button id="aiHint" class="text-white px-6 py-2 rounded-full text-sm transform hover:scale-105 transition-all">
+                        
+                    </button>
+                    <div id="hintText" class="text-gray-300 mt-2 text-sm animate__animated animate__fadeIn hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Grid -->
+        <div class="grid grid-cols-4 gap-4 max-w-2xl mx-auto mb-8" id="gameGrid">
+            <!-- Cards will be generated by JavaScript -->
+        </div>
+
+        <!-- Controls -->
+        <div class="text-center">
+            <button id="startGame" class="bg-gradient-to-r from-pink-500 to-violet-500 text-white px-8 py-3 rounded-full font-semibold text-lg transform hover:scale-105 transition-all hover:shadow-lg hover:shadow-pink-500/25">
+                Start Game
+            </button>
+        </div>
+    </div>
+
+    <!-- Word Game Section -->
+    <div id="wordGame" class="container mx-auto px-4 py-8 hidden">
+        <button onclick="showGameSelection()" class="mb-8 text-white flex items-center gap-2 hover:text-pink-500 transition-colors">
+            <span>← Back to Games</span>
+        </button>
+
+        <header class="text-center mb-12">
+            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+                Word Wizard
+            </h1>
+            <p class="text-gray-300 text-xl">
+                Remember the word!
+            </p>
+        </header>
+
+        <!-- Score section -->
+        <div class="flex justify-center gap-4 mb-8">
+            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4">
+                <p class="text-gray-300">Score</p>
+                <p class="text-3xl font-bold text-white" id="wordScore">0</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center justify-center gap-8">
+            <div id="wordDisplay" class="text-4xl font-bold text-white mb-8 min-h-[100px] flex items-center justify-center"></div>
+            <input type="text" id="wordInput" class="bg-white/10 backdrop-blur-lg rounded-xl px-6 py-4 text-white text-center text-2xl w-full max-w-md hidden" placeholder="Type the word...">
+            <button id="startWordGame" class="bg-gradient-to-r from-pink-500 to-violet-500 text-white px-8 py-4 rounded-full text-xl">
+                Start Game
+            </button>
+        </div>
+    </div>
+
+    <!-- Add this after the wordDisplay div -->
+    <div id="errorMessage" class="hidden text-red-400 mb-4 animate__animated animate__fadeIn">
+        <p class="mb-2">⚠️ <span id="errorText"></span></p>
+        <button onclick="retryWordGame()" class="text-pink-500 hover:text-pink-400 underline">
+            Try Again
+        </button>
+    </div>
+
+    <!-- Number Game Section -->
+        <div id="numberGame" class="container mx-auto px-4 py-8 hidden">
+            <button onclick="showGameSelection()" class="mb-8 text-white flex items-center gap-2 hover:text-pink-500 transition-colors">
+                <span>← Back to Games</span>
+            </button>
+    
+            <header class="text-center mb-12">
+                <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+                    Number Ninja
+                </h1>
+                <p class="text-gray-300 text-xl">
+                    Remember the number sequence!
+                </p>
+            </header>
+    
+            <!-- Score section -->
+            <div class="flex justify-center gap-4 mb-8">
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4">
+                    <p class="text-gray-300">Score</p>
+                    <p class="text-3xl font-bold text-white" id="numberScore">0</p>
+                </div>
+            </div>
+    
+            <div class="flex flex-col items-center justify-center gap-8">
+                <div id="numberDisplay" class="text-6xl font-bold text-white mb-8 min-h-[100px] flex items-center justify-center"></div>
+                <input type="number" id="numberInput" class="bg-white/10 backdrop-blur-lg rounded-xl px-6 py-4 text-white text-center text-2xl w-full max-w-md hidden" placeholder="Enter the number...">
+                <button id="startNumberGame" class="bg-gradient-to-r from-pink-500 to-violet-500 text-white px-8 py-4 rounded-full text-xl">
+                    Start Game
+                </button>
+            </div>
+    
+            <div id="numberErrorMessage" class="hidden text-red-400 mb-4 animate__animated animate__fadeIn text-center mt-4">
+                <p class="mb-2">⚠️ <span id="numberErrorText"></span></p>
+                <button onclick="retryNumberGame()" class="text-pink-500 hover:text-pink-400 underline">
+                    Try Again
+                </button>
+            </div>
+        </div>
+
+    
+    <!-- Visual Memory Game Section -->
+    <div id="visualGame" class="container mx-auto px-4 py-8 hidden">
+        <button onclick="showGameSelection()" class="mb-8 text-white flex items-center gap-2 hover:text-pink-500 transition-colors">
+            <span>← Back to Games</span>
+        </button>
+    
+        <header class="text-center mb-12">
+            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+                Grid Master
+            </h1>
+            <p class="text-gray-300 text-xl">
+                Remember the pattern!
+            </p>
+        </header>
+    
+        <!-- Game Stats -->
+        <div class="flex justify-center gap-4 mb-8">
+            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4">
+                <p class="text-gray-300">Level</p>
+                <p class="text-3xl font-bold text-white" id="visualLevel">1</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4">
+                <p class="text-gray-300">Score</p>
+                <p class="text-3xl font-bold text-white" id="visualScore">0</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4">
+                <p class="text-gray-300">Lives</p>
+                <p class="text-3xl font-bold text-white" id="visualLives">❤️❤️❤️</p>
+            </div>
+        </div>
+    
+        <!-- Game Grid -->
+        <div class="flex flex-col items-center justify-center gap-8">
+            <div id="visualGrid" class="grid gap-2 mx-auto"></div>
+            <button id="startVisualGame" class="bg-gradient-to-r from-pink-500 to-violet-500 text-white px-8 py-4 rounded-full text-xl">
+                Start Game
+            </button>
+        </div>
+    </div>
+
+    <!-- Reaction Time Game Section -->
+        <div id="reactionGame" class="container mx-auto px-4 py-8 hidden">
+            <button onclick="showGameSelection()" class="mb-8 text-white flex items-center gap-2 hover:text-pink-500 transition-colors">
+                <span>← Back to Games</span>
+            </button>
+    
+            <header class="text-center mb-12">
+                <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+                    Reflex Master
+                </h1>
+                <p class="text-gray-300 text-xl">
+                    Test your reaction speed!
+                </p>
+            </header>
+    
+            <!-- Game Stats -->
+            <div class="flex justify-center gap-4 mb-8">
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4">
+                    <p class="text-gray-300">Best Time</p>
+                    <p class="text-3xl font-bold text-white" id="bestReactionTime">---</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-4">
+                    <p class="text-gray-300">Last Time</p>
+                    <p class="text-3xl font-bold text-white" id="lastReactionTime">---</p>
+                </div>
+            </div>
+    
+            <!-- Game Area -->
+            <div class="flex flex-col items-center justify-center gap-8">
+                <div id="reactionBox" class="w-64 h-64 rounded-xl flex items-center justify-center text-white text-xl text-center cursor-pointer transition-all duration-300"></div>
+                <button id="startReactionGame" class="bg-gradient-to-r from-pink-500 to-violet-500 text-white px-8 py-4 rounded-full text-xl">
+                    Start Game
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Game Section -->
+    <div id="chatbotGame" class="container mx-auto px-4 py-8 hidden">
+        <button onclick="showGameSelection()" class="mb-8 text-white flex items-center gap-2 hover:text-pink-500 transition-colors">
+            <span>← Back to Games</span>
+        </button>
+
+        <header class="text-center mb-12">
+            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+                Memory Chatbot
+            </h1>
+            <p class="text-gray-300 text-xl">
+                Chat with me to play memory games!
+            </p>
+        </header>
+
+        <!-- Chat Interface -->
+        <div class="max-w-2xl mx-auto">
+            <div id="chatMessages" class="bg-white/10 backdrop-blur-lg rounded-xl p-4 h-96 overflow-y-auto mb-4">
+                <div class="chat-message bot-message mb-4">
+                    <div class="bg-white/20 rounded-lg p-3 inline-block max-w-[80%]">
+                        <p class="text-white">Hello! I'm your memory game chatbot. Let's play some memory games together! Type 'start' to begin.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-2">
+                <input type="text" id="chatInput" class="flex-1 bg-white/10 backdrop-blur-lg rounded-xl px-4 py-2 text-white" placeholder="Type your message...">
+                <button id="sendMessage" class="bg-gradient-to-r from-pink-500 to-violet-500 text-white px-6 py-2 rounded-xl">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
