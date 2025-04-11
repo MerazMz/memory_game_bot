@@ -5,6 +5,7 @@ import os
 import time
 import logging
 import json
+import traceback
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -17,16 +18,26 @@ CORS(app)
 # Load API key from environment variable
 api_key = os.getenv("GEMINI_API_KEY")
 logger.info(f"API Key exists: {bool(api_key)}")
+if api_key:
+    logger.info(f"API Key length: {len(api_key)}")
+    logger.info(f"API Key starts with: {api_key[:5]}...")
 
 # Initialize model only if API key is available
 model = None
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-pro')
-        logger.info("Gemini model initialized successfully")
+        # Test the API key with a simple request
+        test_model = genai.GenerativeModel('gemini-pro')
+        test_response = test_model.generate_content("Hello")
+        if test_response and test_response.text:
+            logger.info("API key test successful")
+            model = test_model
+        else:
+            logger.error("API key test failed - no response")
     except Exception as e:
         logger.error(f"Failed to initialize Gemini model: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
 else:
     logger.error("GEMINI_API_KEY not found in environment variables")
 
@@ -38,15 +49,18 @@ def generate_with_retry(prompt, max_retries=3):
     for attempt in range(max_retries):
         try:
             logger.info(f"Attempting to generate content, attempt {attempt + 1}")
+            logger.info(f"Prompt: {prompt[:100]}...")  # Log first 100 chars of prompt
             response = model.generate_content(prompt)
             if response and response.text:
                 logger.info("Successfully generated content")
+                logger.info(f"Response: {response.text[:100]}...")  # Log first 100 chars of response
                 return response, None
             else:
                 logger.error("Empty response from model")
                 return None, "Empty response from model"
         except Exception as e:
             logger.error(f"Attempt {attempt + 1} failed: {str(e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
             if attempt == max_retries - 1:
                 return None, str(e)
             time.sleep(1)
@@ -95,6 +109,7 @@ def generate_word():
         return jsonify({'word': word})
     except Exception as e:
         logger.error(f"Error in generate_word: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/chat', methods=['POST'])
@@ -139,6 +154,7 @@ def chat():
         return jsonify({'response': response.text})
     except Exception as e:
         logger.error(f"Error in chat endpoint: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/health-check', methods=['GET'])
@@ -146,7 +162,8 @@ def health_check():
     status = {
         'status': 'ok',
         'api_configured': bool(api_key),
-        'model_initialized': bool(model)
+        'model_initialized': bool(model),
+        'api_key_length': len(api_key) if api_key else 0
     }
     logger.info(f"Health check status: {json.dumps(status)}")
     return jsonify(status)
