@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__, static_folder='.')
-CORS(app)
+CORS(app, origins="*")  # Allow requests from any origin
 
 # Load API key from environment variable
 api_key = os.getenv("GEMINI_API_KEY")
@@ -167,6 +167,43 @@ def health_check():
     }
     logger.info(f"Health check status: {json.dumps(status)}")
     return jsonify(status)
+
+@app.route('/api/debug', methods=['GET'])
+def debug():
+    try:
+        # Basic environment info
+        env_info = {
+            'api_key_exists': bool(api_key),
+            'api_key_length': len(api_key) if api_key else 0,
+            'model_initialized': bool(model),
+            'environment_variables': {k: v for k, v in os.environ.items() if k not in ('GEMINI_API_KEY', 'SECRET')}
+        }
+        
+        # Test the API if key exists
+        if api_key:
+            try:
+                # Try a simple test request
+                genai.configure(api_key=api_key)
+                test_model = genai.GenerativeModel('gemini-pro')
+                test_response = test_model.generate_content("Test")
+                
+                if test_response and test_response.text:
+                    env_info['test_status'] = 'success'
+                    env_info['test_response'] = test_response.text
+                else:
+                    env_info['test_status'] = 'empty_response'
+            except Exception as e:
+                env_info['test_status'] = 'error'
+                env_info['test_error'] = str(e)
+                env_info['test_traceback'] = traceback.format_exc()
+        
+        return jsonify(env_info)
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
 
 # This is required for Vercel
 app = app

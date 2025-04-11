@@ -179,7 +179,7 @@
         // Add AI interaction functions
         async function getGeminiResponse(prompt, endpoint = 'generate-word') {
             try {
-                const response = await fetch(`http://localhost:5000/api/${endpoint}`, {
+                const response = await fetch(`/api/${endpoint}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -476,15 +476,23 @@
             wordDisplay.className = 'text-4xl font-bold text-white mb-8 min-h-[100px] flex items-center justify-center animate__animated';
             wordDisplay.innerHTML = '<div class="animate__animated animate__pulse">Generating word...</div>';
     
-            const response = await fetch('http://localhost:5000/api/generate-word', {
+            const response = await fetch('/api/generate-word', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
     
+            if (!response.ok) {
+                console.error(`API Error: ${response.status}`);
+                throw new Error(`API Error: ${response.status}`);
+            }
+            
             const data = await response.json();
-            if (data.error) throw new Error(data.error);
+            if (data.error) {
+                console.error('API Error:', data.error);
+                throw new Error(data.error);
+            }
             
             currentWord = data.word;
             
@@ -503,11 +511,59 @@
             
         } catch (error) {
             console.error('Error:', error);
-            wordDisplay.innerHTML = '<div class="text-red-400">Error loading word. Please try again.</div>';
+            
+            // Check API status to give better error message
+            const apiWorking = await checkApiStatus();
+            
+            if (!apiWorking) {
+                wordDisplay.innerHTML = `
+                    <div class="text-red-400">
+                        <p>Error: The AI service is not available.</p>
+                        <p class="text-sm mt-2">The Gemini API may not be properly configured.</p>
+                        <button onclick="useFallbackWord()" class="mt-4 bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded">
+                            Use Fallback Word
+                        </button>
+                    </div>`;
+            } else {
+                wordDisplay.innerHTML = `
+                    <div class="text-red-400">
+                        <p>Error loading word. Please try again.</p>
+                        <p class="text-sm mt-2">${error.message}</p>
+                    </div>`;
+            }
+            
             startButton.classList.remove('hidden');
         } finally {
             window.isProcessingRound = false;
         }
+    }
+
+    // Add fallback word function
+    function useFallbackWord() {
+        const wordDisplay = document.getElementById('wordDisplay');
+        const wordInput = document.getElementById('wordInput');
+        const startButton = document.getElementById('startWordGame');
+        
+        // Use a predefined list of words
+        const fallbackWords = [
+            "ELEPHANT", "COMPUTER", "BUILDING", "MOUNTAIN", "UMBRELLA", 
+            "ADVENTURE", "KEYBOARD", "FOOTBALL", "PAINTING", "SYMPHONY"
+        ];
+        
+        // Pick a random word
+        currentWord = fallbackWords[Math.floor(Math.random() * fallbackWords.length)];
+        
+        // Show the word
+        wordDisplay.innerHTML = `<div class="animate__animated animate__fadeIn">${currentWord}</div>`;
+        startButton.classList.add('hidden');
+        
+        // Wait for word display duration
+        setTimeout(() => {
+            // Show input prompt
+            wordDisplay.innerHTML = '<div class="animate__animated animate__fadeIn">Type the word you saw</div>';
+            wordInput.classList.remove('hidden');
+            wordInput.focus();
+        }, 2000);
     }
 
     // Update showFailure to properly clean up
@@ -1112,17 +1168,54 @@ async function sendChatMessage() {
     chatInput.value = '';
     
     try {
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'chat-message bot-message mb-4 typing-indicator';
+        typingIndicator.innerHTML = `
+            <div class="bg-white/20 rounded-lg p-3 inline-block max-w-[80%]">
+                <p class="text-white">Typing<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+            </div>
+        `;
+        chatMessages.appendChild(typingIndicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
         // Get AI response
-        const response = await getGeminiResponse(message, 'chat');
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message })
+        });
+        
+        // Remove typing indicator
+        chatMessages.removeChild(typingIndicator);
+        
+        if (!response.ok) {
+            console.error(`API Error: ${response.status}`);
+            throw new Error(`API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.error) {
+            console.error('Chat API Error:', data.error);
+            throw new Error(data.error);
+        }
         
         // Add bot response to chat
-        addMessageToChat(response, 'bot');
+        addMessageToChat(data.response, 'bot');
         
         // Handle game state based on response
-        handleGameState(response);
+        handleGameState(data.response);
     } catch (error) {
         console.error('Chat error:', error);
-        addMessageToChat('Sorry, I encountered an error. Please try again.', 'bot');
+        // Check if there's a typing indicator to remove
+        const typingIndicator = document.querySelector('.typing-indicator');
+        if (typingIndicator) {
+            chatMessages.removeChild(typingIndicator);
+        }
+        
+        addMessageToChat(`Sorry, I encountered an error: ${error.message}. Please try again later.`, 'bot');
     }
 }
 
@@ -1167,4 +1260,47 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+});
+
+// Add debug function to help troubleshoot API issues
+async function checkApiStatus() {
+    try {
+        const response = await fetch('/api/debug');
+        if (!response.ok) {
+            console.error(`Debug API returned ${response.status}`);
+            return false;
+        }
+        const data = await response.json();
+        console.log('API Debug Info:', data);
+        return data.model_initialized && data.api_key_exists;
+    } catch (error) {
+        console.error('Error checking API status:', error);
+        return false;
+    }
+}
+
+// Add CSS for typing indicator
+document.addEventListener('DOMContentLoaded', () => {
+    // Add CSS for typing animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes typingDot {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+        .typing-indicator .dot {
+            animation: typingDot 1.4s infinite;
+            display: inline-block;
+        }
+        .typing-indicator .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Rest of the initialization code...
 });
