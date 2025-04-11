@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import google.generativeai as genai
 import os
@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.')
 CORS(app)
 
 # Load API key from environment variable
@@ -21,7 +21,7 @@ model = None
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        model = genai.GenerativeModel('gemini-pro')
         logger.info("Gemini model initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize Gemini model: {str(e)}")
@@ -43,6 +43,14 @@ def generate_with_retry(prompt, max_retries=3):
                 return None, str(e)
             time.sleep(1)
     return None, "Max retries exceeded"
+
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('.', path)
 
 @app.route('/api/generate-word', methods=['POST'])
 def generate_word():
