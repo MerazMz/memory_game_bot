@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
 import os
-from dotenv import load_dotenv
 import time
 import logging
 
@@ -10,23 +9,28 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
 # Load API key from environment variable
 api_key = os.getenv("GEMINI_API_KEY")
 
-if not api_key:
-    logger.error("GEMINI_API_KEY not found in environment variables")
-    # Don't exit in serverless environment, just log the error
+# Initialize model only if API key is available
+model = None
+if api_key:
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        logger.info("Gemini model initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize Gemini model: {str(e)}")
 else:
-    # Configure Gemini API
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-pro')  # Using gemini-pro instead of gemini-2.0-flash
+    logger.error("GEMINI_API_KEY not found in environment variables")
 
 def generate_with_retry(prompt, max_retries=3):
-    if not api_key:
-        return None, "API key not configured"
+    if not model:
+        return None, "Model not initialized"
         
     for attempt in range(max_retries):
         try:
@@ -43,8 +47,8 @@ def generate_with_retry(prompt, max_retries=3):
 @app.route('/api/generate-word', methods=['POST'])
 def generate_word():
     try:
-        if not api_key:
-            return jsonify({'error': 'API key not configured'}), 500
+        if not model:
+            return jsonify({'error': 'Model not initialized'}), 500
             
         word_prompt = """
         Generate a single random word:
@@ -74,8 +78,8 @@ def generate_word():
 @app.route('/api/chat', methods=['POST'])
 def chat():
     try:
-        if not api_key:
-            return jsonify({'error': 'API key not configured'}), 500
+        if not model:
+            return jsonify({'error': 'Model not initialized'}), 500
             
         data = request.get_json()
         message = data.get('message', '').strip()
@@ -112,7 +116,8 @@ def chat():
 def health_check():
     return jsonify({
         'status': 'ok',
-        'api_configured': bool(api_key)
+        'api_configured': bool(api_key),
+        'model_initialized': bool(model)
     })
 
 # This is required for Vercel
