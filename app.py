@@ -23,7 +23,7 @@ model = None
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel('gemini-2.0-flash')
         logger.info("Gemini model initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize Gemini model: {str(e)}")
