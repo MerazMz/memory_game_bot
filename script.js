@@ -13,16 +13,16 @@
             document.getElementById('reactionGame').classList.add('hidden');
             document.getElementById('chatbotGame').classList.add('hidden');
             document.getElementById('gameSelection').classList.remove('hidden');
-            
+
             // Reset any running games
             if (timerInterval) {
                 clearInterval(timerInterval);
                 gameStarted = false;
             }
-            
+
             // Reset word game
             resetGame();
-            
+
             // Reset number game
             if (numberDisplayTimeout) {
                 clearTimeout(numberDisplayTimeout);
@@ -56,7 +56,7 @@
             card.innerHTML = `
                 <div class="card-inner w-full h-full transition-transform duration-500 transform-style-preserve-3d relative">
                     <div class="card-front absolute w-full h-full backface-hidden bg-white/10 backdrop-blur-lg rounded-xl flex items-center justify-center">
-                        
+
                     </div>
                     <div class="card-back absolute w-full h-full backface-hidden [transform:rotateY(180deg)] bg-white/10 backdrop-blur-lg rounded-xl flex items-center justify-center">
                         <span class="text-4xl">${emoji}</span>
@@ -70,11 +70,11 @@
 
         function flipCard(card, emoji) {
             if (isProcessing || !gameStarted || flippedCards.includes(card)) return;
-        
+
             const cardInner = card.querySelector('.card-inner');
             cardInner.style.transform = 'rotateY(180deg)';
             flippedCards.push(card);
-        
+
             if (flippedCards.length === 2) {
                 isProcessing = true;
                 checkMatch();
@@ -84,7 +84,7 @@
         function checkMatch() {
             const [card1, card2] = flippedCards;
             const match = card1.querySelector('.card-back').innerHTML === card2.querySelector('.card-back').innerHTML;
-        
+
             setTimeout(() => {
                 if (match) {
                     matchedPairs++;
@@ -107,27 +107,27 @@
 
         // Add this variable with other game variables
         const TIME_LIMIT = 60; // 1 minute in seconds
-        
+
         function updateTimer() {
             seconds++;
             const minutes = Math.floor(seconds / 60);
             const remainingSeconds = seconds % 60;
             const timeLeft = TIME_LIMIT - seconds;
-        
+
             if (timeLeft <= 0) {
                 // Time's up
                 gameOver();
                 return;
             }
-        
-            document.getElementById('timer').textContent = 
+
+            document.getElementById('timer').textContent =
                 `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`;
         }
-        
+
         function gameOver() {
             gameStarted = false;
             clearInterval(timerInterval);
-        
+
             // Show game over modal
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center p-4';
@@ -135,7 +135,7 @@
                 <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 max-w-md w-full">
                     <h2 class="text-2xl font-bold text-white mb-4">Time's Up! ⏰</h2>
                     <p class="text-gray-300 mb-4">You matched ${matchedPairs} pairs.</p>
-                    <button onclick="this.parentElement.parentElement.remove(); startGame();" 
+                    <button onclick="this.parentElement.parentElement.remove(); startGame();"
                             class="bg-gradient-to-r from-pink-500 to-violet-500 text-white px-6 py-2 rounded-full">
                         Try Again
                     </button>
@@ -143,7 +143,7 @@
             `;
             document.body.appendChild(modal);
         }
-        
+
         // Update startGame function
         function startGame() {
             const gameGrid = document.getElementById('gameGrid');
@@ -152,12 +152,12 @@
             seconds = 0;
             gameStarted = true;
             updateScore();
-        
+
             const shuffledCards = shuffleCards([...cards]);
             shuffledCards.forEach((emoji, index) => {
                 gameGrid.appendChild(createCard(emoji, index));
             });
-        
+
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(updateTimer, 1000);
             // Initialize timer display
@@ -167,7 +167,7 @@
         // Add these constants at the top of your script
         const GEMINI_API_KEY = 'AIzaSyBX_AHyoRYHRB6MIvSo3u-5LpDRnL4v8kA';
         const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
-        
+
         // Add these variables for tracking
         let playerStats = {
             gamesPlayed: 0,
@@ -175,26 +175,26 @@
             averageTime: 0,
             currentDifficulty: 'normal'
         };
-        
+
         // Add this variable at the top of your script
         let conversationId = null;
-        
+
         // Update the getGeminiResponse function
         async function getGeminiResponse(prompt, endpoint = 'generate-word') {
             try {
-                const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                    ? 'http://localhost:5000/api' 
+                const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                    ? 'http://localhost:5000/api'
                     : '/api';
-                    
+
                 const payload = {
                     message: endpoint === 'chat' ? prompt : undefined
                 };
-                
+
                 // Add conversationId to the request if we have one and it's a chat request
                 if (endpoint === 'chat' && conversationId) {
                     payload.conversationId = conversationId;
                 }
-                
+
                 const response = await fetch(`${apiBaseUrl}/${endpoint}`, {
                     method: 'POST',
                     headers: {
@@ -223,62 +223,62 @@
                 throw error;
             }
         }
-        
+
         // async function getAIChallenge() {
         //     const prompt = `Based on player stats:
         //         Games played: ${playerStats.gamesPlayed}
         //         Best time: ${playerStats.bestTime === Infinity ? 'None' : playerStats.bestTime}s
         //         Average time: ${playerStats.averageTime}s
         //         Current difficulty: ${playerStats.currentDifficulty}
-                
+
         //         Generate a short, specific challenge for the memory game. Format: {time} seconds with {accuracy}% accuracy`;
-            
+
         //     const challenge = await getGeminiResponse(prompt) || 'Complete in 60s with 90% accuracy';
         //     document.getElementById('aiChallenge').textContent = challenge;
         // }
-        
+
         async function getAIHint() {
             const hintButton = document.getElementById('aiHint');
             const hintText = document.getElementById('hintText');
-            
+
             hintButton.disabled = true;
             hintText.textContent = 'Getting AI hint...';
             hintText.classList.remove('hidden');
-        
+
             const prompt = `Current game state:
                 Matched pairs: ${matchedPairs}
                 Time elapsed: ${seconds}s
                 Remaining pairs: ${8 - matchedPairs}
                 Provide a short, strategic hint for the memory game.`;
-        
+
             const hint = await 'Focus on patterns and take your time!';
             hintText.textContent = hint;
             hintButton.disabled = false;
         }
-        
+
         // Modify your endGame function
         // Remove the duplicate endGame function and keep the async version
         async function endGame() {
             gameStarted = false;
             clearInterval(timerInterval);
-        
+
             // Update player stats
             playerStats.gamesPlayed++;
             const gameTime = seconds;
             playerStats.bestTime = Math.min(playerStats.bestTime, gameTime);
             playerStats.averageTime = (playerStats.averageTime * (playerStats.gamesPlayed - 1) + gameTime) / playerStats.gamesPlayed;
-        
+
             // Get AI analysis
             // const analysisPrompt = `Analyze this memory game performance:
             //     Time: ${gameTime}s
             //     Best time: ${playerStats.bestTime}s
             //     Average time: ${playerStats.averageTime.toFixed(1)}s
             //     Games played: ${playerStats.gamesPlayed}
-                
+
             //     Provide a brief, encouraging analysis and improvement suggestion.`;
-        
+
             // const analysis = await getGeminiResponse(analysisPrompt) || 'Great job! Keep practicing to improve your time.';
-        
+
             // Show custom end game modal
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center p-4';
@@ -286,21 +286,21 @@
                 <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 max-w-md w-full">
                     <h2 class="text-2xl font-bold text-white mb-4">Game Completed! 🎉</h2>
                     <p class="text-gray-300 mb-4">Time: ${document.getElementById('timer').textContent}</p>
-                    <button onclick="this.parentElement.parentElement.remove(); startGame();" 
+                    <button onclick="this.parentElement.parentElement.remove(); startGame();"
                             class="bg-gradient-to-r from-pink-500 to-violet-500 text-white px-6 py-2 rounded-full">
                         Play Again
                     </button>
                 </div>
             `;
             document.body.appendChild(modal);
-        
+
             // Generate new challenge for next game
             await getAIChallenge();
         }
-        
+
         // Add event listener for AI hint button
         document.getElementById('aiHint').addEventListener('click', getAIHint);
-        
+
         // Modify your startGame function to include AI challenge
         async function startGame() {
             const gameGrid = document.getElementById('gameGrid');
@@ -328,7 +328,7 @@
         //         checkWord();
         //     }
         // });
-        
+
         // Keep only one DOMContentLoaded event listener and modify it
         // Update the DOMContentLoaded event listener
         document.addEventListener('DOMContentLoaded', () => {
@@ -337,17 +337,17 @@
         if (startGameButton) {
             startGameButton.addEventListener('click', startGame);
         }
-        
+
         // Word Game initialization
         const startWordGameButton = document.getElementById('startWordGame');
         const wordInput = document.getElementById('wordInput');
-        
+
         if (startWordGameButton) {
             startWordGameButton.addEventListener('click', () => {
                 startWordRound();
             });
         }
-        
+
         if (wordInput) {
             wordInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !wordInput.classList.contains('hidden')) {
@@ -356,20 +356,20 @@
                 }
             });
         }
-        
+
         // Initialize AI hint button
         const aiHintButton = document.getElementById('aiHint');
         if (aiHintButton) {
             aiHintButton.addEventListener('click', getAIHint);
         }
-        
+
         // Initialize word game
         resetGame();
-        
+
         // Chatbot Game initialization
         const chatInput = document.getElementById('chatInput');
         const sendButton = document.getElementById('sendMessage');
-        
+
         if (chatInput && sendButton) {
             sendButton.addEventListener('click', sendChatMessage);
             chatInput.addEventListener('keypress', (e) => {
@@ -395,9 +395,9 @@
         const difficultyLevel = wordGameLevel < 5 ? 'simple' : 'challenging';
         const minLength = wordGameLevel * 2;
         const maxLength = wordGameLevel * 3;
-        
+
         const prompt = `Generate a unique, interesting ${difficultyLevel} word between ${minLength}-${maxLength} letters that would be suitable for a memory game. The word should be related to one of these themes: technology, nature, science, arts, or adventure. Return only the word in capital letters without any additional text or punctuation.`;
-        
+
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
@@ -432,20 +432,20 @@
             return word;
         } catch (error) {
             console.error('Error getting word from AI:', error);
-            
+
             // Update UI with specific error message
             const wordDisplay = document.getElementById('wordDisplay');
-            const errorMessage = error.name === 'AbortError' 
+            const errorMessage = error.name === 'AbortError'
                 ? 'Request timeout. Retrying...'
                 : 'Network error. Retrying...';
-            
+
             wordDisplay.innerHTML = `
                 <div class="text-red-400 mb-4">
                     ⚠️ ${errorMessage}
                     ${retryCount > 0 ? `(Attempt ${retryCount}/${MAX_RETRIES})` : ''}
                 </div>
             `;
-            
+
             // Check retry count
             if (retryCount < MAX_RETRIES) {
                 await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
@@ -454,7 +454,7 @@
                 // If all retries failed, show error and provide fallback
                 wordDisplay.innerHTML = `
                     <div class="text-red-400 mb-4">
-                        ⚠️ Unable to connect to AI service. 
+                        ⚠️ Unable to connect to AI service.
                         <button onclick="retryWordGame()" class="underline ml-2 hover:text-pink-500">
                             Try Again
                         </button>
@@ -478,47 +478,51 @@
         const wordDisplay = document.getElementById('wordDisplay');
         const wordInput = document.getElementById('wordInput');
         const startButton = document.getElementById('startWordGame');
-        
+
         // Prevent multiple calls while processing
         if (window.isProcessingRound) return;
         window.isProcessingRound = true;
-        
+
         // Clear everything at start
         wordDisplay.innerHTML = '';
         wordInput.value = '';
         wordInput.classList.add('hidden');
         startButton.classList.add('hidden');
-        
+
         try {
             // Show loading state
             wordDisplay.className = 'text-4xl font-bold text-white mb-8 min-h-[100px] flex items-center justify-center animate__animated';
             wordDisplay.innerHTML = '<div class="animate__animated animate__pulse">Generating word...</div>';
-    
-            const response = await fetch('http://localhost:5000/api/generate-word', {
+
+            const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:5000/api'
+                : '/api';
+
+            const response = await fetch(`${apiBaseUrl}/generate-word`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-    
+
             const data = await response.json();
             if (data.error) throw new Error(data.error);
-            
+
             currentWord = data.word;
-            
+
             // Show the word
             wordDisplay.innerHTML = `<div class="animate__animated animate__fadeIn">${currentWord}</div>`;
-            
+
             // Wait for word display duration
             await new Promise(resolve => {
                 window.wordDisplayTimeout = setTimeout(resolve, 2000);
             });
-            
+
             // Show input prompt
             wordDisplay.innerHTML = '<div class="animate__animated animate__fadeIn">Type the word you saw</div>';
             wordInput.classList.remove('hidden');
             wordInput.focus();
-            
+
         } catch (error) {
             console.error('Error:', error);
             wordDisplay.innerHTML = '<div class="text-red-400">Error loading word. Please try again.</div>';
@@ -534,18 +538,18 @@
             clearTimeout(window.wordDisplayTimeout);
         }
         window.isProcessingRound = false;
-        
+
         const wordDisplay = document.getElementById('wordDisplay');
         const wordInput = document.getElementById('wordInput');
         const startButton = document.getElementById('startWordGame');
-        
+
         wordDisplay.innerHTML = `<div class="animate__animated animate__shakeX text-red-400">❌ Wrong! The word was: ${currentWord}</div>`;
         wordInput.classList.add('hidden');
-        
+
         wordGameScore = 0;
         updateScore();
         currentWord = '';
-        
+
         setTimeout(() => {
             startButton.classList.remove('hidden');
         }, 2000);
@@ -555,7 +559,7 @@
         const input = document.getElementById('wordInput');
         const userGuess = input.value.trim().toLowerCase();
         const wordDisplay = document.getElementById('wordDisplay');
-        
+
         if (userGuess === currentWord.toLowerCase()) {
             // Increase score by 10 points
             wordGameScore += 10;
@@ -569,10 +573,10 @@
     function showSuccess() {
         const wordDisplay = document.getElementById('wordDisplay');
         const wordInput = document.getElementById('wordInput');
-        
+
         wordDisplay.innerHTML = '<div class="animate__animated animate__bounceIn text-green-400">🎉 Correct! +10 points!</div>';
         wordInput.classList.add('hidden');
-        
+
         // Start next round after delay
         setTimeout(() => {
             startWordRound();
@@ -583,14 +587,14 @@
         const wordDisplay = document.getElementById('wordDisplay');
         const wordInput = document.getElementById('wordInput');
         const startButton = document.getElementById('startWordGame');
-        
+
         wordDisplay.innerHTML = `<div class="animate__animated animate__shakeX text-red-400">❌ Wrong! The word was: ${currentWord}</div>`;
         wordInput.classList.add('hidden');
-        
+
         // Reset score to zero when answer is wrong
         wordGameScore = 0;
         updateScore();
-        
+
         // Show start button after delay
         setTimeout(() => {
             startButton.classList.remove('hidden');
@@ -609,7 +613,7 @@
         const wordInput = document.getElementById('wordInput');
         const startButton = document.getElementById('startWordGame');
         const wordDisplay = document.getElementById('wordDisplay');
-        
+
         wordInput.classList.add('hidden');
         wordInput.value = '';
         startButton.classList.remove('hidden');
@@ -684,9 +688,13 @@ document.addEventListener('DOMContentLoaded', () => {
 async function getWordFromAI() {
     try {
         let attempts = 0;
-        
+
         while (attempts < 5) {
-            const response = await fetch('http://localhost:5000/api/generate-word', {
+            const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:5000/api'
+                : '/api';
+
+            const response = await fetch(`${apiBaseUrl}/generate-word`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -706,13 +714,13 @@ async function getWordFromAI() {
             }
 
             const newWord = data.word;
-            
+
             // Validate word
             if (newWord && newWord.length >= 4 && !usedWords.has(newWord)) {
                 usedWords.add(newWord);
                 return newWord;
             }
-            
+
             attempts++;
         }
         throw new Error('Could not generate valid word');
@@ -750,7 +758,7 @@ function startNumberRound() {
 
     // Display number
     numberDisplay.textContent = currentNumber;
-    
+
     // Hide number after delay and focus input
     const displayTime = Math.max(3000 - (numberScore * 200), 1000);
     numberDisplayTimeout = setTimeout(() => {
@@ -781,12 +789,12 @@ function checkNumber() {
         // Reset score to zero
         numberScore = 0;
         document.getElementById('numberScore').textContent = numberScore;
-        
+
         // Display error message with animation
         numberDisplay.innerHTML = `<div class="animate__animated animate__shakeX text-red-400">❌ Wrong! The number was: ${currentNumber}</div>`;
         numberInput.classList.add('hidden');
         errorMessage.classList.add('hidden');
-        
+
         // Show start button after delay
         startButton.textContent = 'Try Again';
         numberGameStarted = false;
@@ -846,7 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize number game
     resetNumberGame();
 });
-    
+
 //grid master
 // Add at the top with other game variables
 let visualGameLevel = 1;
@@ -875,10 +883,10 @@ function updateVisualStats() {
 function createVisualGrid() {
     const grid = document.getElementById('visualGrid');
     // Adjust grid size based on level progression
-    const size = visualGameLevel <= 2 ? 3 : 
-                 visualGameLevel <= 4 ? 4 : 
+    const size = visualGameLevel <= 2 ? 3 :
+                 visualGameLevel <= 4 ? 4 :
                  visualGameLevel <= 6 ? 5 : 6;
-    
+
     grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
     grid.innerHTML = '';
 
@@ -894,12 +902,12 @@ function createVisualGrid() {
 function showVisualPattern() {
     isShowingPattern = true;
     createVisualGrid();
-    const size = visualGameLevel <= 2 ? 3 : 
-                 visualGameLevel <= 4 ? 4 : 
+    const size = visualGameLevel <= 2 ? 3 :
+                 visualGameLevel <= 4 ? 4 :
                  visualGameLevel <= 6 ? 5 : 6;
     const totalCells = size * size;
     const numCellsToShow = Math.min(visualGameLevel + 2, Math.floor(totalCells / 2));
-    
+
     visualPattern = [];
     while (visualPattern.length < numCellsToShow) {
         const randomCell = Math.floor(Math.random() * totalCells);
@@ -913,7 +921,7 @@ function showVisualPattern() {
         setTimeout(() => {
             const cell = document.querySelector(`[data-index="${cellIndex}"]`);
             cell.classList.add('bg-pink-500');
-            
+
             // Remove highlight and enable interaction after last square
             setTimeout(() => {
                 cell.classList.remove('bg-pink-500');
@@ -944,10 +952,10 @@ function handleCellClick(index) {
 
 function createVisualGrid() {
     const grid = document.getElementById('visualGrid');
-    const size = visualGameLevel <= 2 ? 3 : 
-                 visualGameLevel <= 4 ? 4 : 
+    const size = visualGameLevel <= 2 ? 3 :
+                 visualGameLevel <= 4 ? 4 :
                  visualGameLevel <= 6 ? 5 : 6;
-    
+
     grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
     grid.innerHTML = '';
 
@@ -969,12 +977,12 @@ function checkPattern() {
         visualLives--;
         updateVisualStats();
         showFailureAnimation();
-        
+
         if (visualLives <= 0) {
             gameOverVisual();
             return;
         }
-        
+
         setTimeout(showVisualPattern, 1000);
         return;
     }
@@ -982,12 +990,12 @@ function checkPattern() {
     if (currentLength === visualPattern.length) {
         visualScore += 10;
         correctAttempts++;
-        
+
         if (correctAttempts >= 2) {
             visualGameLevel++;
             correctAttempts = 0;
         }
-        
+
         updateVisualStats();
         showSuccessAnimation();
         setTimeout(showVisualPattern, 1000);
@@ -1014,7 +1022,7 @@ function gameOverVisual() {
             <h2 class="text-2xl font-bold text-white mb-4">Game Over! 🎮</h2>
             <p class="text-gray-300 mb-4">Final Score: ${visualScore}</p>
             <p class="text-gray-300 mb-4">Level Reached: ${visualGameLevel}</p>
-            <button onclick="this.parentElement.parentElement.remove(); startVisualGame();" 
+            <button onclick="this.parentElement.parentElement.remove(); startVisualGame();"
                     class="bg-gradient-to-r from-pink-500 to-violet-500 text-white px-6 py-2 rounded-full">
                 Try Again
             </button>
@@ -1035,7 +1043,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const visualLevelElement = document.getElementById('visualLevel');
     const visualScoreElement = document.getElementById('visualScore');
     const visualLivesElement = document.getElementById('visualLives');
-    
+
     if (visualLevelElement && visualScoreElement && visualLivesElement) {
         visualLevelElement.textContent = '1';
         visualScoreElement.textContent = '0';
@@ -1053,11 +1061,11 @@ let isReactionGameStarted = false;
 function startReactionGame() {
     const reactionBox = document.getElementById('reactionBox');
     const startButton = document.getElementById('startReactionGame');
-    
+
     startButton.classList.add('hidden');
     reactionBox.style.backgroundColor = 'rgb(31, 41, 55)';
     reactionBox.textContent = 'Wait for green...';
-    
+
     // Random delay between 1-5 seconds
     const delay = Math.random() * 4000 + 1000;
     reactionTimeout = setTimeout(() => {
@@ -1074,7 +1082,7 @@ function startReactionGame() {
 function handleReactionClick() {
     const reactionBox = document.getElementById('reactionBox');
     const startButton = document.getElementById('startReactionGame');
-    
+
     if (!isReactionGameStarted) {
         // Clicked too early
         clearTimeout(reactionTimeout);
@@ -1086,11 +1094,11 @@ function handleReactionClick() {
 
     const reactionTime = Date.now() - reactionStartTime;
     bestReactionTime = Math.min(bestReactionTime, reactionTime);
-    
+
     // Update displays
     document.getElementById('lastReactionTime').textContent = `${reactionTime}ms`;
     document.getElementById('bestReactionTime').textContent = `${bestReactionTime}ms`;
-    
+
     // Reset for next round
     reactionBox.style.backgroundColor = '#8b5cf6';
     reactionBox.textContent = 'Click to try again!';
@@ -1122,13 +1130,13 @@ async function sendChatMessage() {
     const chatInput = document.getElementById('chatInput');
     const chatMessages = document.getElementById('chatMessages');
     const message = chatInput.value.trim();
-    
+
     if (!message) return;
-    
+
     // Add user message to chat
     addMessageToChat(message, 'user');
     chatInput.value = '';
-    
+
     try {
         // Show typing indicator
         const typingIndicator = document.createElement('div');
@@ -1140,16 +1148,16 @@ async function sendChatMessage() {
         `;
         chatMessages.appendChild(typingIndicator);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        
+
         // Get AI response
         const response = await getGeminiResponse(message, 'chat');
-        
+
         // Remove typing indicator
         chatMessages.removeChild(typingIndicator);
-        
+
         // Add bot response to chat
         addMessageToChat(response, 'bot');
-        
+
         // Handle game state based on response
         handleGameState(response);
     } catch (error) {
@@ -1162,17 +1170,17 @@ function addMessageToChat(message, sender) {
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
     messageDiv.className = `chat-message ${sender}-message new-message`;
-    
+
     const messageContent = document.createElement('div');
     messageContent.className = `chat-bubble ${sender}-bubble`;
     messageContent.innerHTML = `<p>${message}</p>`;
-    
+
     messageDiv.appendChild(messageContent);
     chatMessages.appendChild(messageDiv);
-    
+
     // Scroll to bottom
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    
+
     // Remove animation class after animation completes to prevent replay on reload
     setTimeout(() => {
         messageDiv.classList.remove('new-message');
@@ -1191,11 +1199,11 @@ function handleGameState(response) {
 // Initialize Chatbot Game
 document.addEventListener('DOMContentLoaded', () => {
     // ... existing initialization code ...
-    
+
     // Chatbot Game initialization
     const chatInput = document.getElementById('chatInput');
     const sendButton = document.getElementById('sendMessage');
-    
+
     if (chatInput && sendButton) {
         sendButton.addEventListener('click', sendChatMessage);
         chatInput.addEventListener('keypress', (e) => {
