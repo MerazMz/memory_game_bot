@@ -476,11 +476,17 @@
             wordDisplay.className = 'text-4xl font-bold text-white mb-8 min-h-[100px] flex items-center justify-center animate__animated';
             wordDisplay.innerHTML = '<div class="animate__animated animate__pulse">Generating word...</div>';
     
-            // Use the client-side API implementation
-            const result = await API.generateWord();
-            if (result.error) throw new Error(result.error);
+            const response = await fetch('http://localhost:5000/api/generate-word', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
             
-            currentWord = result.word;
+            currentWord = data.word;
             
             // Show the word
             wordDisplay.innerHTML = `<div class="animate__animated animate__fadeIn">${currentWord}</div>`;
@@ -1102,65 +1108,22 @@ async function sendChatMessage() {
     if (!message) return;
     
     // Add user message to chat
-    chatMessages.innerHTML += `
-        <div class="chat-message user-message mb-4 text-right">
-            <div class="bg-gradient-to-r from-pink-500 to-violet-500 rounded-lg p-3 inline-block max-w-[80%]">
-                <p class="text-white">${message}</p>
-            </div>
-        </div>
-    `;
-    
+    addMessageToChat(message, 'user');
     chatInput.value = '';
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    // Show typing indicator
-    const typingIndicator = document.createElement('div');
-    typingIndicator.className = 'chat-message bot-message mb-4 typing-indicator';
-    typingIndicator.innerHTML = `
-        <div class="bg-white/20 rounded-lg p-3 inline-block max-w-[80%]">
-            <p class="text-white">Typing<span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span></p>
-        </div>
-    `;
-    chatMessages.appendChild(typingIndicator);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
     
     try {
-        // Use the client-side API implementation
-        const data = await API.chatWithBot(message);
+        // Get AI response
+        const response = await getGeminiResponse(message, 'chat');
         
-        // Remove typing indicator
-        typingIndicator.remove();
+        // Add bot response to chat
+        addMessageToChat(response, 'bot');
         
-        if (data.error) {
-            throw new Error(data.error);
-        }
-        
-        // Add bot response
-        chatMessages.innerHTML += `
-            <div class="chat-message bot-message mb-4">
-                <div class="bg-white/20 rounded-lg p-3 inline-block max-w-[80%]">
-                    <p class="text-white">${data.response}</p>
-                </div>
-            </div>
-        `;
-        
+        // Handle game state based on response
+        handleGameState(response);
     } catch (error) {
         console.error('Chat error:', error);
-        
-        // Remove typing indicator
-        typingIndicator.remove();
-        
-        // Show error message
-        chatMessages.innerHTML += `
-            <div class="chat-message bot-message mb-4">
-                <div class="bg-red-500/20 rounded-lg p-3 inline-block max-w-[80%]">
-                    <p class="text-red-400">Sorry, I'm having trouble connecting right now. Please try again later.</p>
-                </div>
-            </div>
-        `;
+        addMessageToChat('Sorry, I encountered an error. Please try again.', 'bot');
     }
-    
-    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function addMessageToChat(message, sender) {
