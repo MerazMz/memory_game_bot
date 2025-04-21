@@ -15,6 +15,92 @@
             transform-style: preserve-3d;
             -webkit-transform-style: preserve-3d;
         }
+        
+        /* Typing indicator animation - more subtle */
+        .typing-indicator .dot {
+            opacity: 0;
+            animation: typingDot 1.8s infinite;
+            display: inline-block;
+        }
+        .typing-indicator .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        .typing-indicator .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        @keyframes typingDot {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            60% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+        
+        /* Custom scrollbar for chat messages */
+        #chatMessages {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer/Edge */
+        }
+        #chatMessages::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        /* Chat styling */
+        .chat-message {
+            display: flex;
+            margin-bottom: 1rem;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .user-message {
+            justify-content: flex-end;
+        }
+        .bot-message {
+            justify-content: flex-start;
+        }
+        .chat-bubble {
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+        .user-bubble {
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+            color: white;
+            border-bottom-right-radius: 0.25rem;
+        }
+        .bot-bubble {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-bottom-left-radius: 0.25rem;
+        }
+        
+        /* Subtle fade in for new messages */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .new-message {
+            animation: fadeIn 0.3s ease forwards;
+        }
+        
+        /* Modify existing animate.css animations to be more subtle */
+        .animate__animated.animate__fadeIn {
+            animation-duration: 0.7s !important;
+        }
+        .animate__animated.animate__fadeInDown {
+            animation-duration: 0.7s !important;
+        }
+        .animate__animated.animate__fadeInLeft, 
+        .animate__animated.animate__fadeInRight,
+        .animate__animated.animate__fadeInUp {
+            animation-duration: 0.5s !important;
+        }
+        .animate__delay-1s {
+            animation-delay: 0.3s !important;
+        }
+        .animate__delay-2s {
+            animation-delay: 0.5s !important;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-gray-900 to-black"></body>
@@ -25,46 +111,46 @@
                 <span class="text-5xl">👾</span>
                 SynaptiBot
             </h1>
-            <p class="text-gray-300 text-xl animate__animated animate__fadeIn animate__delay-1s ">
+            <p class="text-gray-300 text-xl animate__animated animate__fadeIn">
                 I am your memory game bot choose the game below to start playing!
             </p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <!-- Memory Game Card -->
-            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInLeft animate__delay-1s" onclick="showGame('memoryGame')">
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInLeft" onclick="showGame('memoryGame')">
                 <h2 class="text-2xl font-bold text-white mb-3">Memory Master</h2>
                 <p class="text-gray-300 mb-4">Challenge your mind with this classic memory matching game!</p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
             <!-- Word Memory Game -->
-            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInUp animate__delay-1s" onclick="showGame('wordGame')">
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInUp" onclick="showGame('wordGame')">
                 <h2 class="text-2xl font-bold text-white mb-3">Word Wizard</h2>
                 <p class="text-gray-300 mb-4">Test your memory by remembering and typing words!</p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
             <!-- Number Memory Game -->
-            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInRight animate__delay-1s" onclick="showGame('numberGame')">
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInRight" onclick="showGame('numberGame')">
                 <h2 class="text-2xl font-bold text-white mb-3">Number Ninja</h2>
                 <p class="text-gray-300 mb-4">Challenge yourself to remember and recall numbers!</p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
             <!-- Visual Memory Grid Game -->
-            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInUp animate__delay-1s" onclick="showGame('visualGame')">
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInUp" onclick="showGame('visualGame')">
                 <h2 class="text-2xl font-bold text-white mb-3">Grid Genius</h2>
                 <p class="text-gray-300 mb-4">Test your visual memory with pattern recognition! </p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
             
             <!-- Reaction Time Game -->
-            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInRight animate__delay-1s" onclick="showGame('reactionGame')">
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInRight" onclick="showGame('reactionGame')">
                 <h2 class="text-2xl font-bold text-white mb-3">Reflex Tester</h2>
                 <p class="text-gray-300 mb-4">Test your reaction time and reflexes!</p><br>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
 
             <!-- Chatbot Game Card -->
-            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeIn animate__delay-2s" onclick="showGame('chatbotGame')">
+            <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeIn" onclick="showGame('chatbotGame')">
                 <h2 class="text-2xl font-bold text-white mb-3">Memory Chatbot</h2>
                 <p class="text-gray-300 mb-4">Play memory games through conversation with AI!</p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
@@ -304,10 +390,10 @@
 
         <!-- Chat Interface -->
         <div class="max-w-2xl mx-auto">
-            <div id="chatMessages" class="bg-white/10 backdrop-blur-lg rounded-xl p-4 h-96 overflow-y-auto mb-4">
-                <div class="chat-message bot-message mb-4">
-                    <div class="bg-white/20 rounded-lg p-3 inline-block max-w-[80%]">
-                        <p class="text-white">Hello! I'm your memory game chatbot. Let's play some memory games together! Type 'start' to begin.</p>
+            <div id="chatMessages" class="rounded-xl p-4 h-96 overflow-y-auto mb-4">
+                <div class="chat-message bot-message new-message">
+                    <div class="chat-bubble bot-bubble">
+                        <p>Hello! I'm your memory game chatbot. I'll tell you short stories and then test your memory with questions about them. Type 'start' to begin!</p>
                     </div>
                 </div>
             </div>

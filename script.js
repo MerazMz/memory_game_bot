@@ -176,29 +176,47 @@
             currentDifficulty: 'normal'
         };
         
-        // Add AI interaction functions
+        // Add this variable at the top of your script
+        let conversationId = null;
+        
+        // Update the getGeminiResponse function
         async function getGeminiResponse(prompt, endpoint = 'generate-word') {
             try {
-                const response = await fetch(`http://localhost:5000/api/${endpoint}`, {
+                const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'http://localhost:5000/api' 
+                    : '/api';
+                    
+                const payload = {
+                    message: endpoint === 'chat' ? prompt : undefined
+                };
+                
+                // Add conversationId to the request if we have one and it's a chat request
+                if (endpoint === 'chat' && conversationId) {
+                    payload.conversationId = conversationId;
+                }
+                
+                const response = await fetch(`${apiBaseUrl}/${endpoint}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 
-                        prompt: endpoint === 'chat' ? prompt : undefined,
-                        message: endpoint === 'chat' ? prompt : undefined
-                    })
+                    body: JSON.stringify(payload)
                 });
-        
+
                 if (!response.ok) {
                     throw new Error(`API Error: ${response.status}`);
                 }
-        
+
                 const data = await response.json();
                 if (data.error) {
                     throw new Error(data.error);
                 }
-        
+
+                // Store the conversation ID if it's a chat response
+                if (endpoint === 'chat' && data.conversationId) {
+                    conversationId = data.conversationId;
+                }
+
                 return endpoint === 'chat' ? data.response : data.word || data.hint || data.challenge;
             } catch (error) {
                 console.error('API Error:', error);
@@ -1112,8 +1130,22 @@ async function sendChatMessage() {
     chatInput.value = '';
     
     try {
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'chat-message bot-message typing-indicator new-message';
+        typingIndicator.innerHTML = `
+            <div class="chat-bubble bot-bubble">
+                <p>Thinking<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+            </div>
+        `;
+        chatMessages.appendChild(typingIndicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
         // Get AI response
         const response = await getGeminiResponse(message, 'chat');
+        
+        // Remove typing indicator
+        chatMessages.removeChild(typingIndicator);
         
         // Add bot response to chat
         addMessageToChat(response, 'bot');
@@ -1129,17 +1161,22 @@ async function sendChatMessage() {
 function addMessageToChat(message, sender) {
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
-    messageDiv.className = `chat-message ${sender}-message mb-4`;
+    messageDiv.className = `chat-message ${sender}-message new-message`;
     
     const messageContent = document.createElement('div');
-    messageContent.className = `bg-white/20 rounded-lg p-3 inline-block max-w-[80%] ${sender === 'user' ? 'ml-auto' : ''}`;
-    messageContent.innerHTML = `<p class="text-white">${message}</p>`;
+    messageContent.className = `chat-bubble ${sender}-bubble`;
+    messageContent.innerHTML = `<p>${message}</p>`;
     
     messageDiv.appendChild(messageContent);
     chatMessages.appendChild(messageDiv);
     
     // Scroll to bottom
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Remove animation class after animation completes to prevent replay on reload
+    setTimeout(() => {
+        messageDiv.classList.remove('new-message');
+    }, 500);
 }
 
 function handleGameState(response) {
