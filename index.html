@@ -4,9 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Synapti BOT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Poppins', 'sans-serif'],
+                        'jersey': ['"Jersey 15"', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Jersey 15', 'Poppins', sans-serif;
+        }
+        
         .backface-hidden {
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
@@ -103,11 +126,11 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-gray-900 to-black"></body>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 to-black font-sans">
     <!-- Game Selection Screen -->
     <div id="gameSelection" class="container mx-auto px-4 py-8">
         <header class="text-center mb-12">
-            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 animate__animated animate__fadeInDown mb-6 flex items-center justify-center gap-2">
+            <h1 class="text-6xl font-bold font-jersey text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 animate__animated animate__fadeInDown mb-6 flex items-center justify-center gap-2">
                 <span class="text-5xl">👾</span>
                 SynaptiBot
             </h1>
@@ -119,39 +142,39 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <!-- Memory Game Card -->
             <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInLeft" onclick="showGame('memoryGame')">
-                <h2 class="text-2xl font-bold text-white mb-3">Memory Master</h2>
+                <h2 class="text-2xl font-bold font-jersey text-white mb-3">Memory Master</h2>
                 <p class="text-gray-300 mb-4">Challenge your mind with this classic memory matching game!</p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
             <!-- Word Memory Game -->
             <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInUp" onclick="showGame('wordGame')">
-                <h2 class="text-2xl font-bold text-white mb-3">Word Wizard</h2>
+                <h2 class="text-2xl font-bold font-jersey text-white mb-3">Word Wizard</h2>
                 <p class="text-gray-300 mb-4">Test your memory by remembering and typing words!</p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
             <!-- Number Memory Game -->
             <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInRight" onclick="showGame('numberGame')">
-                <h2 class="text-2xl font-bold text-white mb-3">Number Ninja</h2>
+                <h2 class="text-2xl font-bold font-jersey text-white mb-3">Number Ninja</h2>
                 <p class="text-gray-300 mb-4">Challenge yourself to remember and recall numbers!</p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
             <!-- Visual Memory Grid Game -->
             <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInUp" onclick="showGame('visualGame')">
-                <h2 class="text-2xl font-bold text-white mb-3">Grid Genius</h2>
+                <h2 class="text-2xl font-bold font-jersey text-white mb-3">Grid Genius</h2>
                 <p class="text-gray-300 mb-4">Test your visual memory with pattern recognition! </p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
             
             <!-- Reaction Time Game -->
             <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeInRight" onclick="showGame('reactionGame')">
-                <h2 class="text-2xl font-bold text-white mb-3">Reflex Tester</h2>
+                <h2 class="text-2xl font-bold font-jersey text-white mb-3">Reflex Tester</h2>
                 <p class="text-gray-300 mb-4">Test your reaction time and reflexes!</p><br>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
 
             <!-- Chatbot Game Card -->
             <div class="game-card bg-white/10 backdrop-blur-lg rounded-xl p-6 transform hover:scale-105 transition-all cursor-pointer animate__animated animate__fadeIn" onclick="showGame('chatbotGame')">
-                <h2 class="text-2xl font-bold text-white mb-3">Memory Chatbot</h2>
+                <h2 class="text-2xl font-bold font-jersey text-white mb-3">Memory Chatbot</h2>
                 <p class="text-gray-300 mb-4">Play memory games through conversation with AI!</p>
                 <div class="text-white bg-gradient-to-r from-pink-400 to-violet-400 px-4 py-2 rounded-full transform hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 ease-in-out inline-block">Click to Play →</div>
             </div>
@@ -167,7 +190,7 @@
 
         <!-- Header Section -->
         <header class="text-center mb-12">
-            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 animate__animated animate__fadeIn mb-4">
+            <h1 class="text-6xl font-bold font-jersey text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 animate__animated animate__fadeIn mb-4">
                 Memory Master
             </h1>
             <p class="text-gray-300 text-xl animate__animated animate__fadeIn animate__delay-1s">
@@ -223,7 +246,7 @@
         </button>
 
         <header class="text-center mb-12">
-            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+            <h1 class="text-6xl font-bold font-jersey text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
                 Word Wizard
             </h1>
             <p class="text-gray-300 text-xl">
@@ -263,7 +286,7 @@
             </button>
     
             <header class="text-center mb-12">
-                <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+                <h1 class="text-6xl font-bold font-jersey text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
                     Number Ninja
                 </h1>
                 <p class="text-gray-300 text-xl">
@@ -303,7 +326,7 @@
         </button>
     
         <header class="text-center mb-12">
-            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+            <h1 class="text-6xl font-bold font-jersey text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
                 Grid Master
             </h1>
             <p class="text-gray-300 text-xl">
@@ -343,7 +366,7 @@
             </button>
     
             <header class="text-center mb-12">
-                <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+                <h1 class="text-6xl font-bold font-jersey text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
                     Reflex Master
                 </h1>
                 <p class="text-gray-300 text-xl">
@@ -380,7 +403,7 @@
         </button>
 
         <header class="text-center mb-12">
-            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
+            <h1 class="text-6xl font-bold font-jersey text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4">
                 Memory Chatbot
             </h1>
             <p class="text-gray-300 text-xl">
@@ -406,7 +429,9 @@
             </div>
         </div>
     </div>
-
+    <!-- Add footer -->
+  <footer class="fixed bottom-0 w-full bg-black/10 backdrop-blur-sm text-white text-center py-2 text-sm">
+    Developed with <span class="animate-pulse">❤️</span> by Meraj and Teams</footer>
     <script src="script.js"></script>
 </body>
 </html>
