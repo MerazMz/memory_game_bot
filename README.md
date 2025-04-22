@@ -1,6 +1,33 @@
-# Memory Game Bot AI Project
+# Memory Game Bot
 
-A web-based memory game with AI capabilities.
+A Flask web application featuring a memory game chatbot and word wizard powered by Google's Gemini API.
+
+## Deployment to Vercel
+
+1. Fork or clone this repository
+2. Connect the repository to Vercel
+3. Configure the following environment variables in Vercel:
+   - `GEMINI_API_KEY`: Your Google Gemini API key
+   - `SECRET_KEY`: A random string for Flask session security
+
+## Local Development
+
+1. Clone the repository
+2. Create a `.env` file based on `.env.example` and add your API keys
+3. Install dependencies: `pip install -r requirements.txt`
+4. Run the application: `python app.py`
+5. Open http://localhost:5000 in your browser
+
+## Notes on Vercel Deployment
+
+- Vercel runs serverless functions which reset between invocations
+- Conversation history is maintained in memory and will be lost between deployments or when functions go idle
+- For production, consider implementing a database solution for persistent storage
+
+## Features
+
+- Memory Game Chatbot: Tests memory with short stories and follow-up questions
+- Word Wizard: Generates random words for games
 
 ## Project Structure
 

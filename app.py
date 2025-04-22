@@ -34,6 +34,8 @@ else:
     logger.error("GEMINI_API_KEY not found in environment variables")
 
 # Store conversation history
+# Note: This will reset between serverless function invocations on Vercel
+# Consider using a database for persistent storage in production
 conversations = {}
 
 def generate_with_retry(prompt, conversation_id=None, max_retries=3):
